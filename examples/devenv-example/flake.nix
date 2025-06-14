@@ -59,6 +59,13 @@
                 apiKeyFilepath = "/var/run/agenix/grafana-api.key";
                 toolsets = [ "search" ];
               };
+              fetch.enable = true;
+              git.enable = true;
+              sequential-thinking.enable = true;
+              time = {
+                enable = true;
+                # localTimezone = "America/Vancouver";
+              };
             };
           };
         };
