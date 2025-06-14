@@ -148,7 +148,7 @@ let
         };
 
         toolsets = mkOption {
-          type = types.listOf (types.enum [
+          type = types.nonEmptyListOf (types.enum [
             "repos" "issues" "users" "pull_requests" "code_security"
           ]);
           default = ["repos" "pull_requests" "users"];
@@ -183,7 +183,7 @@ let
         };
 
         toolsets = mkOption {
-          type = types.listOf (types.enum [
+          type = types.nonEmptyListOf (types.enum [
             "search" "datasource" "incident" "prometheus"
             "loki" "alerting" "dashboard" "oncall" "asserts"
             "sift" "admin"
@@ -200,6 +200,7 @@ let
         };
       };
     };
+
   };
 
 in
