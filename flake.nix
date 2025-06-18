@@ -67,7 +67,9 @@
             { pkgs, ... }:
             {
               packages = [ pkgs.claude-code ];
-              git-hooks.hooks.nixfmt-rfc-style.enable = true;
+              git-hooks.hooks = {
+                nixfmt-rfc-style.enable = true;
+              };
             };
 
         };
