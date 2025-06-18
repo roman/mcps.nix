@@ -62,6 +62,7 @@
 
         devenv.shells.default = {pkgs, ...}: {
           packages = [ pkgs.claude-code ];
+          git-hooks.hooks.nixfmt-rfc-style.enable = true;
         };
 
       };
