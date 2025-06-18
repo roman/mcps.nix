@@ -109,6 +109,14 @@ let
       binary = "mcp-server-time";
     };
 
+    buildkite = mkTool {
+      package = wrapWithCredentialFiles {
+        package = pkgs.buildkite-mcp-server;
+        credentialEnvs = [ "BUILDKITE_API_TOKEN" ];
+      };
+      binary = "buildkite-mcp-server";
+    };
+
   };
 
   # Combined tools (base + extra)

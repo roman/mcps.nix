@@ -1,0 +1,232 @@
+From 985eae5c0c7718f4832b49de6c555f7ce819c6b6 Mon Sep 17 00:00:00 2001
+From: Alex Berghage <alexander.berghage@airbnb.com>
+Date: Mon, 16 Jun 2025 15:20:46 -0700
+Subject: [PATCH] Add download_job_logs tool for saving job logs to local files
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- Implement DownloadJobLogs function that downloads job logs and saves them to local files
+- Add filename sanitization and path validation for security
+- Return file metadata (path, size) instead of log content to avoid token limits
+- Register new tool in MCP server tool collection
+- Support configurable output directory and filename prefix
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+---
+ internal/buildkite/jobs.go | 178 +++++++++++++++++++++++++++++++++++++
+ internal/commands/mcp.go   |   1 +
+ 2 files changed, 179 insertions(+)
+
+diff --git a/internal/buildkite/jobs.go b/internal/buildkite/jobs.go
+index b847229..f92e921 100644
+--- a/internal/buildkite/jobs.go
++++ b/internal/buildkite/jobs.go
+@@ -6,6 +6,11 @@ import (
+ 	"fmt"
+ 	"io"
+ 	"net/http"
++	"os"
++	"path/filepath"
++	"regexp"
++	"strings"
++	"time"
+ 
+ 	"github.com/buildkite/buildkite-mcp-server/internal/buildkite/joblogs"
+ 	"github.com/buildkite/buildkite-mcp-server/internal/tokens"
+@@ -224,4 +229,177 @@ func GetJobs(ctx context.Context, client BuildsClient) (tool mcp.Tool, handler s
+ 
+ 			return mcp.NewToolResultText(processedLog), nil
+ 		}
++}
++
++// sanitizeFilename removes unsafe characters from filename components
++var unsafeChars = regexp.MustCompile(`[^\w\-_.]`)
++
++func sanitizeFilename(name string) string {
++	return unsafeChars.ReplaceAllString(name, "_")
++}
++
++// DownloadJobLogsResponse represents the response from downloading job logs
++type DownloadJobLogsResponse struct {
++	FilePath      string `json:"file_path"`
++	FileSizeBytes int64  `json:"file_size_bytes"`
++	JobUUID       string `json:"job_uuid"`
++	BuildNumber   string `json:"build_number"`
++}
++
++func DownloadJobLogs(ctx context.Context, client *buildkite.Client) (tool mcp.Tool, handler server.ToolHandlerFunc) {
++	return mcp.NewTool("download_job_logs",
++			mcp.WithDescription("Download the logs of a job in a Buildkite build to a local file. Returns the file path instead of log content to avoid token limits."),
++			mcp.WithString("org",
++				mcp.Required(),
++				mcp.Description("The organization slug for the owner of the pipeline"),
++			),
++			mcp.WithString("pipeline_slug",
++				mcp.Required(),
++				mcp.Description("The slug of the pipeline"),
++			),
++			mcp.WithString("build_number",
++				mcp.Required(),
++				mcp.Description("The build number"),
++			),
++			mcp.WithString("job_uuid",
++				mcp.Required(),
++				mcp.Description("The UUID of the job"),
++			),
++			mcp.WithString("output_dir",
++				mcp.Description("Directory to save log file (defaults to system temp directory)"),
++			),
++			mcp.WithString("filename_prefix",
++				mcp.Description("Prefix for log filename (defaults to job UUID)"),
++			),
++			mcp.WithToolAnnotation(mcp.ToolAnnotation{
++				Title:        "Download Job Logs",
++				ReadOnlyHint: mcp.ToBoolPtr(false),
++			}),
++		),
++		func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
++			ctx, span := trace.Start(ctx, "buildkite.DownloadJobLogs")
++			defer span.End()
++
++			org, err := request.RequireString("org")
++			if err != nil {
++				return mcp.NewToolResultError(err.Error()), nil
++			}
++
++			pipelineSlug, err := request.RequireString("pipeline_slug")
++			if err != nil {
++				return mcp.NewToolResultError(err.Error()), nil
++			}
++
++			buildNumber, err := request.RequireString("build_number")
++			if err != nil {
++				return mcp.NewToolResultError(err.Error()), nil
++			}
++
++			jobUUID, err := request.RequireString("job_uuid")
++			if err != nil {
++				return mcp.NewToolResultError(err.Error()), nil
++			}
++
++			outputDir := request.GetString("output_dir", "")
++			filenamePrefix := request.GetString("filename_prefix", jobUUID)
++
++			span.SetAttributes(
++				attribute.String("org", org),
++				attribute.String("pipeline_slug", pipelineSlug),
++				attribute.String("build_number", buildNumber),
++				attribute.String("job_uuid", jobUUID),
++				attribute.String("output_dir", outputDir),
++				attribute.String("filename_prefix", filenamePrefix),
++			)
++
++			// Determine output directory
++			if outputDir == "" {
++				outputDir = os.TempDir()
++			} else {
++				// Clean and validate the path
++				outputDir = filepath.Clean(outputDir)
++				if strings.Contains(outputDir, "..") {
++					return mcp.NewToolResultError("invalid output directory: path traversal not allowed"), nil
++				}
++			}
++
++			// Verify directory exists and is writable
++			if info, err := os.Stat(outputDir); err != nil {
++				return mcp.NewToolResultError(fmt.Sprintf("output directory error: %s", err.Error())), nil
++			} else if !info.IsDir() {
++				return mcp.NewToolResultError("output path is not a directory"), nil
++			}
++
++			// Get job logs from API (reuse existing logic)
++			joblog, resp, err := client.Jobs.GetJobLog(ctx, org, pipelineSlug, buildNumber, jobUUID)
++			if err != nil {
++				return mcp.NewToolResultError(err.Error()), nil
++			}
++
++			if resp.StatusCode != http.StatusOK {
++				body, err := io.ReadAll(resp.Body)
++				if err != nil {
++					return nil, fmt.Errorf("failed to read response body: %w", err)
++				}
++				return mcp.NewToolResultError(fmt.Sprintf("failed to get job logs: %s", string(body))), nil
++			}
++
++			// Process logs (strip ANSI codes, etc.)
++			processedLog, err := joblogs.Process(joblog)
++			if err != nil {
++				return nil, fmt.Errorf("failed to process job log: %w", err)
++			}
++
++			// Generate safe filename
++			timestamp := time.Now().Unix()
++			sanitizedPrefix := sanitizeFilename(filenamePrefix)
++			sanitizedBuildNumber := sanitizeFilename(buildNumber)
++			filename := fmt.Sprintf("%s_%s_%s_%d.log", sanitizedPrefix, sanitizedBuildNumber, jobUUID, timestamp)
++			filePath := filepath.Join(outputDir, filename)
++
++			// Create and write file
++			file, err := os.Create(filePath)
++			if err != nil {
++				return mcp.NewToolResultError(fmt.Sprintf("failed to create log file: %s", err.Error())), nil
++			}
++			defer file.Close()
++
++			_, err = file.WriteString(processedLog)
++			if err != nil {
++				// Clean up partial file
++				os.Remove(filePath)
++				return mcp.NewToolResultError(fmt.Sprintf("failed to write log file: %s", err.Error())), nil
++			}
++
++			// Get file info
++			fileInfo, err := file.Stat()
++			if err != nil {
++				return mcp.NewToolResultError(fmt.Sprintf("failed to get file info: %s", err.Error())), nil
++			}
++
++			// Get absolute path for response
++			absPath, err := filepath.Abs(filePath)
++			if err != nil {
++				absPath = filePath // fallback to relative path
++			}
++
++			span.SetAttributes(
++				attribute.String("file_path", absPath),
++				attribute.Int64("file_size_bytes", fileInfo.Size()),
++			)
++
++			response := DownloadJobLogsResponse{
++				FilePath:      absPath,
++				FileSizeBytes: fileInfo.Size(),
++				JobUUID:       jobUUID,
++				BuildNumber:   buildNumber,
++			}
++
++			r, err := json.Marshal(&response)
++			if err != nil {
++				return nil, fmt.Errorf("failed to marshal response: %w", err)
++			}
++
++			return mcp.NewToolResultText(string(r)), nil
++		}
+ }
+\ No newline at end of file
+diff --git a/internal/commands/mcp.go b/internal/commands/mcp.go
+index 18b5c1c..7f33693 100644
+--- a/internal/commands/mcp.go
++++ b/internal/commands/mcp.go
+@@ -68,6 +68,7 @@ func BuildkiteTools(ctx context.Context, client *gobuildkite.Client) []server.Se
+ 	// Job tools
+ 	tools = addTool(buildkite.GetJobs(ctx, client.Builds))
+ 	tools = addTool(buildkite.GetJobLogs(ctx, client))
++	tools = addTool(buildkite.DownloadJobLogs(ctx, client))
+ 
+ 	// Artifacts tools
+ 	tools = addTool(buildkite.ListArtifacts(ctx, clientAdapter))
+-- 
+2.46.0
+

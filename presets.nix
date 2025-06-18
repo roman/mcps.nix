@@ -260,6 +260,22 @@ let
       };
     };
 
+    buildkite = {
+      name = "Buildkite";
+      command = tools.getToolPath "buildkite";
+      args = config: [ "stdio" ];
+      env = config: {
+        BUILDKITE_API_TOKEN_FILEPATH = config.apiKeyFilepath;
+      };
+      options = {
+        apiKeyFilepath = mkOption {
+          type = types.str;
+          description = lib.mdDoc "File containing Buildkit API token";
+          example = "/var/run/agenix/buildkite-api.token";
+        };
+      };
+    };
+
   };
 
 in
