@@ -41,6 +41,10 @@
                     enable = true;
                     allowedPaths = [ "/tmp" ];
                   };
+                  lsp-typescript = {
+                    enable = true;
+                    workspace = "/tmp/test-ts-workspace";
+                  };
                 };
               };
             }

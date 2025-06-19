@@ -89,6 +89,11 @@ Add to your Home Manager configuration:
 | **git** | Git repository operations and version control | [modelcontextprotocol/servers](https://github.com/modelcontextprotocol/servers) |
 | **github** | GitHub API integration with configurable toolsets (repos, issues, users, pull_requests, code_security) | [github/github-mcp-server](https://github.com/github/github-mcp-server) |
 | **grafana** | Grafana monitoring, alerting, and dashboard management with multiple toolsets | [grafana/mcp-grafana](https://github.com/grafana/mcp-grafana) |
+| **lsp-golang** | Language Server Protocol integration for Go development with configurable workspace | [isaacphi/mcp-language-server](https://github.com/isaacphi/mcp-language-server) |
+| **lsp-nix** | Language Server Protocol integration for Nix development with configurable workspace | [isaacphi/mcp-language-server](https://github.com/isaacphi/mcp-language-server) |
+| **lsp-python** | Language Server Protocol integration for Python development with configurable workspace | [isaacphi/mcp-language-server](https://github.com/isaacphi/mcp-language-server) |
+| **lsp-rust** | Language Server Protocol integration for Rust development with configurable workspace | [isaacphi/mcp-language-server](https://github.com/isaacphi/mcp-language-server) |
+| **lsp-typescript** | Language Server Protocol integration for TypeScript development with configurable workspace | [isaacphi/mcp-language-server](https://github.com/isaacphi/mcp-language-server) |
 | **sequential-thinking** | Enhanced reasoning and knowledge graph capabilities | [modelcontextprotocol/servers](https://github.com/modelcontextprotocol/servers) |
 | **time** | Time and timezone utilities with configurable local timezone | [modelcontextprotocol/servers](https://github.com/modelcontextprotocol/servers) |
 

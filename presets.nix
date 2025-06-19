@@ -1,4 +1,9 @@
-{ lib, tools, ... }:
+{
+  lib,
+  tools,
+  pkgs,
+  ...
+}:
 
 let
   inherit (lib)
@@ -7,6 +12,7 @@ let
     mkIf
     types
     ;
+
   mcpServerOptionsType = import ./nix/lib/mcp-server-options.nix lib;
 
   # Helper to transform a simple preset definition into a full module
@@ -282,6 +288,187 @@ let
           description = lib.mdDoc "File containing Buildkit API token";
           example = "/var/run/agenix/buildkite-api.token";
         };
+      };
+    };
+
+    lsp-golang = {
+      name = "LSP (Golang)";
+      command = tools.getToolPath "lsp";
+      args = config: [
+        "--workspace"
+        config.workspace
+        "--lsp"
+        config.lspPackage.meta.mainProgram
+      ];
+      env =
+        config:
+        (
+          {
+            PATH = lib.makeBinPath [
+              config.lspPackage
+              config.goPackage
+            ];
+          }
+          // (if config.GOROOT != null then { GOROOT = config.GOROOT; } else { })
+          // (if config.GOCACHE != null then { GOCACHE = config.GOCACHE; } else { })
+          // (if config.GOMODCACHE != null then { GOMODCACHE = config.GOMODCACHE; } else { })
+        );
+
+      options = {
+        lspPackage = lib.mkOption {
+          type = types.package;
+          description = "package for golang's LSP server";
+          default = pkgs.gopls;
+        };
+
+        goPackage = lib.mkOption {
+          type = types.package;
+          description = "go package";
+          default = pkgs.go;
+        };
+
+        workspace = lib.mkOption {
+          type = types.str;
+          description = "workspace where the lsp-server will run";
+        };
+
+        GOROOT = lib.mkOption {
+          type = types.nullOr types.str;
+          default = null;
+          description = "GOROOT used by gopls";
+        };
+
+        GOCACHE = lib.mkOption {
+          type = types.nullOr types.str;
+          default = null;
+          description = "GOCACHE used by gopls";
+        };
+
+        GOMODCACHE = lib.mkOption {
+          type = types.nullOr types.str;
+          default = null;
+          description = "GOMODCACHE used by gopls";
+        };
+      };
+    };
+
+    lsp-typescript = {
+      name = "LSP (Typescript)";
+      command = tools.getToolPath "lsp";
+      args = config: [
+        "--workspace"
+        config.workspace
+        "--lsp"
+        config.lspPackage.meta.mainProgram
+      ];
+      env = config: {
+        PATH = lib.makeBinPath [ pkgs.typescript-language-server ];
+      };
+      options = {
+
+        lspPackage = lib.mkOption {
+          type = types.package;
+          default = pkgs.typescript-language-server;
+          description = "package for typescript's LSP server";
+        };
+
+        workspace = lib.mkOption {
+          type = types.str;
+          description = "workspace where the lsp-server will run";
+        };
+
+      };
+    };
+
+    lsp-python = {
+      name = "LSP (Python)";
+      command = tools.getToolPath "lsp";
+      args = config: [
+        "--workspace"
+        config.workspace
+        "--lsp"
+        config.lspPackage.meta.mainProgram
+        "--"
+        "--stdio"
+      ];
+
+      env = config: {
+        PATH = lib.makeBinPath [ config.lspPackage ];
+      };
+
+      options = {
+
+        lspPackage = lib.mkOption {
+          type = types.package;
+          default = pkgs.pyright;
+          description = "package for python's LSP server";
+        };
+
+        workspace = lib.mkOption {
+          type = types.str;
+          description = "workspace where the lsp-server will run";
+        };
+
+      };
+    };
+
+    lsp-rust = {
+      name = "LSP (Rust)";
+      command = tools.getToolPath "lsp";
+      args = config: [
+        "--workspace"
+        config.workspace
+        "--lsp"
+        config.lspPackage.meta.mainProgram
+      ];
+
+      env = config: {
+        PATH = lib.makeBinPath [ config.lspPackage ];
+      };
+
+      options = {
+
+        lspPackage = lib.mkOption {
+          type = types.package;
+          default = pkgs.rust-analyzer;
+          description = "package for rust's LSP server";
+        };
+
+        workspace = lib.mkOption {
+          type = types.str;
+          description = "workspace where the lsp-server will run";
+        };
+
+      };
+    };
+
+    lsp-nix = {
+      name = "LSP (Nix)";
+      command = tools.getToolPath "lsp";
+      args = config: [
+        "--workspace"
+        config.workspace
+        "--lsp"
+        config.lspPackage.meta.mainProgram
+      ];
+
+      env = config: {
+        PATH = lib.makeBinPath [ config.lspPackage ];
+      };
+
+      options = {
+
+        lspPackage = lib.mkOption {
+          type = types.package;
+          default = pkgs.nil;
+          description = "package for nix's LSP server";
+        };
+
+        workspace = lib.mkOption {
+          type = types.str;
+          description = "workspace where the lsp-server will run";
+        };
+
       };
     };
 

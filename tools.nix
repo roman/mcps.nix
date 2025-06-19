@@ -117,6 +117,11 @@ let
       binary = "buildkite-mcp-server";
     };
 
+    lsp = mkTool {
+      package = pkgs.mcp-language-server;
+      binary = "mcp-language-server";
+    };
+
   };
 
   # Combined tools (base + extra)

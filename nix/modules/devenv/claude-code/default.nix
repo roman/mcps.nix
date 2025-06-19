@@ -33,7 +33,7 @@ let
   # ----------------------
   mcpServerOptionsType = import ../../../lib/mcp-server-options.nix lib;
   presetDefinitions = import ../../../../presets.nix {
-    inherit config lib;
+    inherit config lib pkgs;
     tools = extendedTools;
   };
 

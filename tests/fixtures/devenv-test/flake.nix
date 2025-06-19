@@ -34,6 +34,10 @@
               mcp = {
                 git.enable = true;
                 fetch.enable = true;
+                lsp-golang = {
+                  enable = true;
+                  workspace = "/tmp/test-workspace";
+                };
               };
             };
           };
