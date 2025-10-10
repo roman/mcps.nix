@@ -102,24 +102,24 @@ let
     let
       version = "7c2dd8ce765ffb6b42964c9d8541706829487c90";
     in
-      buildNpmPackage {
-	pname = "shx";
-	inherit version;
-	src = fetchFromGitHub {
-	  owner = "shelljs";
-	  repo = "shx";
-	  rev = version;
-	  hash = "sha256-QGq6WqjozgU9AxosDyTe7wrl+sulccxIN9AohoS+Zc0=";
-	};
-	dontNpmBuild = true;
-	npmDepsHash = "sha256-R1fn1TH4FntPnMd40AUGYIPLSZX18sQ7fKzTU3zSEd0=";
-	meta = with lib; {
-	  description = "Portable Shell Commands for Node";
-	  homepage = "https://github.com/shelljs/shx";
-	  license = licenses.mit;
-	  maintainers = with maintainers; [ roman ];
-	};
+    buildNpmPackage {
+      pname = "shx";
+      inherit version;
+      src = fetchFromGitHub {
+        owner = "shelljs";
+        repo = "shx";
+        rev = version;
+        hash = "sha256-QGq6WqjozgU9AxosDyTe7wrl+sulccxIN9AohoS+Zc0=";
       };
+      dontNpmBuild = true;
+      npmDepsHash = "sha256-R1fn1TH4FntPnMd40AUGYIPLSZX18sQ7fKzTU3zSEd0=";
+      meta = with lib; {
+        description = "Portable Shell Commands for Node";
+        homepage = "https://github.com/shelljs/shx";
+        license = licenses.mit;
+        maintainers = with maintainers; [ roman ];
+      };
+    };
 
   jsServers = buildNpmPackage {
     pname = "mcp-servers";
