@@ -50,7 +50,7 @@ let
           inherit command;
           inherit (config) timeoutMillis;
           args = args config;
-          env = env config;
+          env = builtins.mapAttrs (k: v: builtins.toString v) (env config);
         };
       };
     };
@@ -300,7 +300,7 @@ let
       options = {
         apiKeyFilepath = mkOption {
           type = types.str;
-          description = lib.mdDoc "File containing Buildkit API token";
+          description = lib.mdDoc "File containing Buildkite API token";
           example = "/var/run/agenix/buildkite-api.token";
         };
       };
@@ -482,6 +482,41 @@ let
         workspace = lib.mkOption {
           type = types.str;
           description = "workspace where the lsp-server will run";
+        };
+
+      };
+    };
+
+    obsidian = {
+      name = "Obsidian";
+      command = tools.getToolPath "obsidian";
+
+      args = config: [ ];
+
+      env = config: {
+        OBSIDIAN_API_KEY_FILEPATH = config.apiKeyFilepath;
+        OBSIDIAN_HOST = config.host;
+        OBSIDIAN_PORT = config.port;
+      };
+
+      options = {
+
+        host = lib.mkOption {
+          type = types.str;
+          description = lib.mdDoc "Host of the obisidan server";
+          default = "127.0.0.1";
+        };
+
+        port = lib.mkOption {
+          type = types.number;
+          description = lib.mdDoc "Port of the obisidian server";
+          default = 27124;
+        };
+
+        apiKeyFilepath = mkOption {
+          type = types.str;
+          description = lib.mdDoc "File containing Obsidian Key";
+          example = "/var/run/agenix/obisidian.key";
         };
 
       };

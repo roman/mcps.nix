@@ -122,6 +122,14 @@ let
       binary = "mcp-language-server";
     };
 
+    obsidian = mkTool {
+      package = wrapWithCredentialFiles {
+        package = pkgs.mcp-obsidian;
+        credentialEnvs = [ "OBSIDIAN_API_KEY" ];
+      };
+      binary = "mcp-obsidian";
+    };
+
   };
 
   # Combined tools (base + extra)
