@@ -30,13 +30,7 @@ let
       options = {
         enable = mkEnableOption description;
 
-        timeoutMillis = mkOption {
-          type = types.nullOr types.int;
-          default = 5000;
-          description = lib.mdDoc "Timeout in milliseconds";
-        };
-
-        mcpServer = lib.mkOption {
+        mcpServer = mkOption {
           type = lib.types.submodule mcpServerOptionsType;
           default = { };
           description = lib.mdDoc "MCP server configuration";
@@ -48,7 +42,6 @@ let
         mcpServer = {
           type = "stdio";
           inherit command;
-          inherit (config) timeoutMillis;
           args = args config;
           env = builtins.mapAttrs (k: v: builtins.toString v) (env config);
         };
@@ -330,36 +323,36 @@ let
         );
 
       options = {
-        lspPackage = lib.mkOption {
+        lspPackage = mkOption {
           type = types.package;
           description = "package for golang's LSP server";
           default = pkgs.gopls;
         };
 
-        goPackage = lib.mkOption {
+        goPackage = mkOption {
           type = types.package;
           description = "go package";
           default = pkgs.go;
         };
 
-        workspace = lib.mkOption {
+        workspace = mkOption {
           type = types.str;
           description = "workspace where the lsp-server will run";
         };
 
-        GOROOT = lib.mkOption {
+        GOROOT = mkOption {
           type = types.nullOr types.str;
           default = null;
           description = "GOROOT used by gopls";
         };
 
-        GOCACHE = lib.mkOption {
+        GOCACHE = mkOption {
           type = types.nullOr types.str;
           default = null;
           description = "GOCACHE used by gopls";
         };
 
-        GOMODCACHE = lib.mkOption {
+        GOMODCACHE = mkOption {
           type = types.nullOr types.str;
           default = null;
           description = "GOMODCACHE used by gopls";
@@ -381,13 +374,13 @@ let
       };
       options = {
 
-        lspPackage = lib.mkOption {
+        lspPackage = mkOption {
           type = types.package;
           default = pkgs.typescript-language-server;
           description = "package for typescript's LSP server";
         };
 
-        workspace = lib.mkOption {
+        workspace = mkOption {
           type = types.str;
           description = "workspace where the lsp-server will run";
         };
@@ -413,13 +406,13 @@ let
 
       options = {
 
-        lspPackage = lib.mkOption {
+        lspPackage = mkOption {
           type = types.package;
           default = pkgs.pyright;
           description = "package for python's LSP server";
         };
 
-        workspace = lib.mkOption {
+        workspace = mkOption {
           type = types.str;
           description = "workspace where the lsp-server will run";
         };
@@ -443,13 +436,13 @@ let
 
       options = {
 
-        lspPackage = lib.mkOption {
+        lspPackage = mkOption {
           type = types.package;
           default = pkgs.rust-analyzer;
           description = "package for rust's LSP server";
         };
 
-        workspace = lib.mkOption {
+        workspace = mkOption {
           type = types.str;
           description = "workspace where the lsp-server will run";
         };
@@ -473,13 +466,13 @@ let
 
       options = {
 
-        lspPackage = lib.mkOption {
+        lspPackage = mkOption {
           type = types.package;
           default = pkgs.nil;
           description = "package for nix's LSP server";
         };
 
-        workspace = lib.mkOption {
+        workspace = mkOption {
           type = types.str;
           description = "workspace where the lsp-server will run";
         };
@@ -501,13 +494,13 @@ let
 
       options = {
 
-        host = lib.mkOption {
+        host = mkOption {
           type = types.str;
           description = lib.mdDoc "Host of the obisidan server";
           default = "127.0.0.1";
         };
 
-        port = lib.mkOption {
+        port = mkOption {
           type = types.number;
           description = lib.mdDoc "Port of the obisidian server";
           default = 27124;
