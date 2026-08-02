@@ -39,7 +39,7 @@ let
     lib.mkOption {
       type = lib.types.submodule preset;
       default = { };
-      description = lib.mdDoc (preset.meta.description or "MCP preset for ${name}");
+      description = preset.meta.description or "MCP preset for ${name}";
     }
   ) presetDefinitions;
 
@@ -65,7 +65,7 @@ in
                 servers = mkOption {
                   type = types.attrsOf (types.submodule mcpServerOptionsType);
                   default = { };
-                  description = lib.mdDoc "Custom MCP server configurations";
+                  description = "Custom MCP server configurations";
                 };
               };
             }
@@ -74,7 +74,7 @@ in
       ];
     };
     default = { };
-    description = lib.mdDoc "MCP server configurations";
+    description = "MCP server configurations";
   };
 
   config = mkIf claudeCfg.enable {

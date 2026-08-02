@@ -33,7 +33,7 @@ let
         mcpServer = mkOption {
           type = lib.types.submodule mcpServerOptionsType;
           default = { };
-          description = lib.mdDoc "MCP server configuration";
+          description = "MCP server configuration";
         };
       }
       // options;
@@ -60,7 +60,7 @@ let
       options = {
         tokenFilepath = mkOption {
           type = types.str;
-          description = lib.mdDoc "File containing Asana API access token";
+          description = "File containing Asana API access token";
           example = "/var/run/agenix/asana.token";
         };
       };
@@ -73,7 +73,7 @@ let
       options = {
         allowedPaths = mkOption {
           type = types.nonEmptyListOf types.str;
-          description = lib.mdDoc "List of allowed filepaths that your agent can explore";
+          description = "List of allowed filepaths that your agent can explore";
           example = [ "/Users/jdoe/Projects" ];
         };
       };
@@ -112,18 +112,18 @@ let
         proxyURL = mkOption {
           type = types.nullOr types.str;
           default = null;
-          description = lib.mdDoc "Proxy URL to use for requests";
+          description = "Proxy URL to use for requests";
           example = "https://localhost:3000";
         };
         ignoreRobotsTxt = mkOption {
           type = types.bool;
           default = false;
-          description = lib.mdDoc "Ignore robots.txt restrictions";
+          description = "Ignore robots.txt restrictions";
           example = false;
         };
         userAgent = mkOption {
           type = types.nullOr types.str;
-          description = lib.mdDoc "Custom User-Agent string";
+          description = "Custom User-Agent string";
           default = null;
           example = "claude-code";
         };
@@ -152,7 +152,7 @@ let
       options = {
         localTimezone = mkOption {
           type = types.str;
-          description = lib.mdDoc "Timezone used by the server";
+          description = "Timezone used by the server";
           example = "America/New_York";
         };
       };
@@ -177,13 +177,13 @@ let
       options = {
         tokenFilepath = mkOption {
           type = types.str;
-          description = lib.mdDoc "File containing GitHub API access token";
+          description = "File containing GitHub API access token";
           example = "/var/run/agenix/gh-personal-access.token";
         };
 
         baseURL = mkOption {
           type = types.nullOr types.str;
-          description = lib.mdDoc "Use it for GitHub Enterprise Cloud installs";
+          description = "Use it for GitHub Enterprise Cloud installs";
           example = "https://<your GHES or ghe.com domain name>";
         };
 
@@ -216,7 +216,7 @@ let
             "pull_requests"
             "users"
           ];
-          description = lib.mdDoc "List of GitHub toolsets to enable";
+          description = "List of GitHub toolsets to enable";
         };
       };
     };
@@ -240,13 +240,13 @@ let
       options = {
         apiKeyFilepath = mkOption {
           type = types.str;
-          description = lib.mdDoc "File containing Grafana API key";
+          description = "File containing Grafana API key";
           example = "/var/run/agenix/grafana-api.key";
         };
 
         baseURL = mkOption {
           type = types.str;
-          description = lib.mdDoc "URL where the Grafana host lives";
+          description = "URL where the Grafana host lives";
           example = "https://localhost:3000";
         };
 
@@ -271,12 +271,12 @@ let
             "search"
             "datasource"
           ];
-          description = lib.mdDoc "List of Grafana toolsets to enable";
+          description = "List of Grafana toolsets to enable";
         };
 
         debug = mkOption {
           type = types.bool;
-          description = lib.mdDoc "Enable debug mode for the Grafana transport";
+          description = "Enable debug mode for the Grafana transport";
           default = false;
           example = "true";
         };
@@ -293,7 +293,7 @@ let
       options = {
         apiKeyFilepath = mkOption {
           type = types.str;
-          description = lib.mdDoc "File containing Buildkite API token";
+          description = "File containing Buildkite API token";
           example = "/var/run/agenix/buildkite-api.token";
         };
       };
@@ -496,19 +496,19 @@ let
 
         host = mkOption {
           type = types.str;
-          description = lib.mdDoc "Host of the obisidan server";
+          description = "Host of the obisidan server";
           default = "127.0.0.1";
         };
 
         port = mkOption {
           type = types.number;
-          description = lib.mdDoc "Port of the obisidian server";
+          description = "Port of the obisidian server";
           default = 27124;
         };
 
         apiKeyFilepath = mkOption {
           type = types.str;
-          description = lib.mdDoc "File containing Obsidian Key";
+          description = "File containing Obsidian Key";
           example = "/var/run/agenix/obisidian.key";
         };
 
@@ -529,7 +529,7 @@ let
         configFile = mkOption {
           type = types.nullOr types.str;
           default = null;
-          description = lib.mdDoc "Path to sgconfig.yaml file for customizing ast-grep behavior";
+          description = "Path to sgconfig.yaml file for customizing ast-grep behavior";
           example = "/path/to/sgconfig.yaml";
         };
       };
