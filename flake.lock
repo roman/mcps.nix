@@ -540,11 +540,11 @@
         "systems": "systems_2"
       },
       "locked": {
-        "lastModified": 1785698137,
-        "narHash": "sha256-DSqecTLkFrD+tShM1hMWZjR9FV+C85P93Fs+QRTEZwo=",
+        "lastModified": 1785700050,
+        "narHash": "sha256-Oylx/aHtlnkpJ4mL/YPvkNGWuGRd6zfPa35Xr3q4tsk=",
         "owner": "roman",
         "repo": "nixDir",
-        "rev": "6c099ca9244761320acd5397826933941078c347",
+        "rev": "0255fbe003c097c3e7754cda43e53805ed2de7cc",
         "type": "github"
       },
       "original": {
