@@ -72,6 +72,13 @@
           inputs.self.overlays.default
         ];
         generateAllPackage = true;
+
+        # nixDir stopped defaulting both of these to true in v3.3.x, so ask for
+        # them by name. Consumers import `overlays.flake` to get this flake's
+        # MCP servers into their own nixpkgs, and tools.nix resolves every
+        # server as `pkgs.<name>`, which needs the overlay installed here too.
+        generateFlakeOverlay = true;
+        installFlakeOverlay = true;
       };
 
       flake.overlays = {
