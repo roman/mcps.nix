@@ -19,6 +19,10 @@
 
     mcp-nixos.url = "github:utensils/mcp-nixos/v1.0.3";
     mcp-nixos.inputs.nixpkgs.follows = "nixpkgs";
+    # mcp-nixos pulls devshell, which locks a third nixpkgs for a dev shell
+    # nothing downstream enters. Following it here keeps that tree out of every
+    # consumer's lock rather than making each one reach three levels down.
+    mcp-nixos.inputs.devshell.inputs.nixpkgs.follows = "nixpkgs";
 
     devenv.url = "github:cachix/devenv";
     devenv.inputs.nixpkgs.follows = "nixpkgs";
