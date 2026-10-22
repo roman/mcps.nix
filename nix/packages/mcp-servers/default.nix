@@ -2,6 +2,7 @@
   uv2nix,
   pyproject,
   pyproject-build-systems,
+  mcp-servers-src,
   lib,
   callPackage,
   callPackages,
@@ -14,13 +15,9 @@
 }:
 
 let
+  # Keep this version equal to the mcp-servers-src input tag in flake.nix.
   version = "2025.9.25";
-  masterSrc = fetchFromGitHub {
-    owner = "modelcontextprotocol";
-    repo = "servers";
-    rev = version;
-    sha256 = "sha256-ysTuSHFs7GABMuFXG+DcyonVXVs7m45j9sDPdHBS2wQ=";
-  };
+  masterSrc = mcp-servers-src;
 
   gitServer =
     let

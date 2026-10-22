@@ -433,6 +433,23 @@
         "type": "github"
       }
     },
+    "mcp-servers-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1758835489,
+        "narHash": "sha256-ysTuSHFs7GABMuFXG+DcyonVXVs7m45j9sDPdHBS2wQ=",
+        "owner": "modelcontextprotocol",
+        "repo": "servers",
+        "rev": "aa5a4f1c74637e153a066c8cdeb9ff5c56d2843c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "modelcontextprotocol",
+        "ref": "2025.9.25",
+        "repo": "servers",
+        "type": "github"
+      }
+    },
     "mk-shell-bin": {
       "locked": {
         "lastModified": 1677004959,
@@ -751,6 +768,7 @@
         "home-manager": "home-manager",
         "home-manager-unstable": "home-manager-unstable",
         "mcp-nixos": "mcp-nixos",
+        "mcp-servers-src": "mcp-servers-src",
         "nix2container": "nix2container",
         "nixDir": "nixDir",
         "nixpkgs": "nixpkgs",

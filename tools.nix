@@ -136,7 +136,7 @@ let
     };
 
     nixos = mkTool {
-      package = inputs.mcp-nixos.packages.${pkgs.system}.default;
+      package = inputs.mcp-nixos.packages.${pkgs.stdenv.hostPlatform.system}.default;
       binary = "mcp-nixos";
     };
 

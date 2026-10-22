@@ -53,6 +53,11 @@
 
     systems.url = "github:nix-systems/default";
     systems.flake = false;
+
+    mcp-servers-src = {
+      url = "github:modelcontextprotocol/servers/2025.9.25";
+      flake = false;
+    };
   };
 
   outputs =
@@ -89,10 +94,13 @@
         default =
           _final: prev:
           let
-            unstable-pkgs = import inputs.nixpkgs-unstable { inherit (prev) system; };
+            unstable-pkgs = import inputs.nixpkgs-unstable {
+              system = prev.stdenv.hostPlatform.system;
+            };
           in
           {
             inherit (inputs) uv2nix pyproject pyproject-build-systems;
+            inherit (inputs) mcp-servers-src;
             inherit (unstable-pkgs) github-mcp-server;
           };
       };
