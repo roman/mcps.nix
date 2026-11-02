@@ -8,13 +8,17 @@
   callPackages,
   fetchFromGitHub,
   buildNpmPackage,
-  nodejs,
-  nodePackages,
+  nodejs_22,
+  typescript,
   python311,
   symlinkJoin,
 }:
 
 let
+  # npm 11 (default nodejs in newer nixpkgs) rejects the shx lockfile, so stay on Node 22.
+  nodejs = nodejs_22;
+  buildNpmPackage' = buildNpmPackage.override { inherit nodejs; };
+
   # Keep this version equal to the mcp-servers-src input tag in flake.nix.
   version = "2025.9.25";
   masterSrc = mcp-servers-src;
@@ -99,7 +103,7 @@ let
     let
       version = "7c2dd8ce765ffb6b42964c9d8541706829487c90";
     in
-    buildNpmPackage {
+    buildNpmPackage' {
       pname = "shx";
       inherit version;
       src = fetchFromGitHub {
@@ -118,14 +122,14 @@ let
       };
     };
 
-  jsServers = buildNpmPackage {
+  jsServers = buildNpmPackage' {
     pname = "mcp-servers";
     inherit version;
     src = "${masterSrc}";
     npmDepsHash = "sha256-iRPILytyloL6qRMvy2fsDdqkewyqEfcuVspwUN5Lrqw=";
     PUPPETEER_SKIP_DOWNLOAD = 1;
     nativeBuildInputs = [
-      nodePackages.typescript
+      typescript
       shx
     ];
     buildInputs = [ nodejs ];
